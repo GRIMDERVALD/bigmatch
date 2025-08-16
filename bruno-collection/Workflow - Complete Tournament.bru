@@ -1,0 +1,146 @@
+meta {
+  name: Workflow - Complete Tournament
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api_url}}/tournaments/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Workflow Test Tournament",
+    "location": "Bruno Test Gym",
+    "date": "2024-12-25T14:00:00",
+    "organizer": "Bruno Tester",
+    "settings": {
+      "teams_per_pool": 4,
+      "matches_per_team": 3,
+      "score_limit": 21,
+      "time_limit": null
+    }
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    const tournamentId = res.body.id;
+    const shareLink = res.body.share_link;
+    
+    // Save tournament variables
+    bru.setEnvVar("tournament_id", tournamentId);
+    bru.setEnvVar("share_link", shareLink);
+    
+    console.log("🏀 Tournament created:", tournamentId);
+    console.log("🔗 Share link:", shareLink);
+    
+    // Array of players to add
+    const players = [
+      "Jordan Smith",
+      "Alex Johnson", 
+      "Taylor Brown",
+      "Morgan Davis",
+      "Casey Wilson",
+      "Riley Garcia",
+      "Avery Martinez",
+      "Quinn Anderson"
+    ];
+    
+    console.log("➕ Adding", players.length, "players...");
+    
+    // Add all players
+    players.forEach(async (playerName, index) => {
+      try {
+        const response = await fetch(`{{api_url}}/players/tournaments/${tournamentId}/players`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name: playerName,
+            contact: `${playerName.toLowerCase().replace(' ', '')}@test.com`
+          })
+        });
+        
+        if (response.ok) {
+          const player = await response.json();
+          console.log(`✅ Player ${index + 1} added:`, playerName);
+          
+          // If this is the last player, proceed with tournament setup
+          if (index === players.length - 1) {
+            console.log("🏊 Creating pools...");
+            
+            // Create pools
+            const poolsResponse = await fetch(`{{api_url}}/tournaments/${tournamentId}/create-pools`, {
+              method: 'POST'
+            });
+            
+            if (poolsResponse.ok) {
+              const poolsResult = await poolsResponse.json();
+              console.log("✅ Pools created:", poolsResult.pools);
+              
+              console.log("🚀 Starting tournament...");
+              
+              // Start tournament
+              const startResponse = await fetch(`{{api_url}}/tournaments/${tournamentId}/start`, {
+                method: 'POST'
+              });
+              
+              if (startResponse.ok) {
+                const startResult = await startResponse.json();
+                console.log("✅ Tournament started, matches created:", startResult.matches_created);
+                
+                // Get first match ID
+                const matchesResponse = await fetch(`{{api_url}}/matches/tournaments/${tournamentId}/matches`);
+                if (matchesResponse.ok) {
+                  const matches = await matchesResponse.json();
+                  if (matches.length > 0) {
+                    bru.setEnvVar("match_id", matches[0].id);
+                    console.log("🥇 First match ID saved:", matches[0].id);
+                  }
+                }
+                
+                // Get first team ID
+                const teamsResponse = await fetch(`{{api_url}}/teams/tournaments/${tournamentId}/teams`);
+                if (teamsResponse.ok) {
+                  const teams = await teamsResponse.json();
+                  if (teams.length > 0) {
+                    bru.setEnvVar("team_id", teams[0].id);
+                    console.log("🏀 First team ID saved:", teams[0].id);
+                  }
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error adding player:", playerName, error);
+      }
+    });
+  }
+}
+
+tests {
+  test("Tournament created successfully", function() {
+    expect(res.status).to.equal(201);
+    expect(res.body).to.have.property("id");
+    expect(res.body).to.have.property("share_link");
+  });
+}
+
+docs {
+  # Complete Tournament Workflow
+  
+  This single request creates a complete tournament ready for testing:
+  
+  1. ✅ Creates tournament
+  2. ➕ Adds 8 players automatically
+  3. 🏊 Creates pools (teams)
+  4. 🚀 Starts tournament (generates matches)
+  5. 💾 Saves all IDs for other requests
+  
+  After running this, all other requests will work with the saved variables.
+}

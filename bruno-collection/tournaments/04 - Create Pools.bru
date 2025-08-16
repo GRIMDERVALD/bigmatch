@@ -1,0 +1,27 @@
+meta {
+  name: Create Pools
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/tournaments/{{tournament_id}}/create-pools
+  body: none
+  auth: none
+}
+
+tests {
+  test("Pools created successfully", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.message).to.equal("Pools created successfully");
+    expect(res.body.pools).to.have.property("teams_created");
+    expect(res.body.pools.teams_created).to.be.at.least(4);
+  });
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("Teams created:", res.body.pools.teams_created);
+    console.log("Players assigned:", res.body.pools.players_assigned);
+  }
+}

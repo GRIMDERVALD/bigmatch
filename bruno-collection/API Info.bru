@@ -1,0 +1,19 @@
+meta {
+  name: API Info
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/
+  body: none
+  auth: none
+}
+
+tests {
+  test("API info returned", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.message).to.equal("BIGMATCH API");
+    expect(res.body).to.have.property("version");
+  });
+}

@@ -1,0 +1,18 @@
+{
+  "name": "bigmatch-app",
+  "version": "1.0.0",
+  "description": "Application complète BIGMATCH - Frontend React + Backend FastAPI",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
+    "dev:api": "cd bigmatch-api && docker-compose up",
+    "dev:frontend": "cd bigmatch-frontend && npm run dev",
+    "build": "cd bigmatch-frontend && npm run build",
+    "preview": "cd bigmatch-frontend && npm run preview"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["basketball", "tournament", "fastapi", "react", "typescript"],
+  "author": "BIGMATCH Team",
+  "license": "MIT"
+}

@@ -1,0 +1,35 @@
+meta {
+  name: Create Tournament
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api_url}}/tournaments/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Tournoi Bruno Test",
+    "location": "Gymnase Central",
+    "date": "2024-12-25T14:00:00",
+    "organizer": "Test Organizer",
+    "settings": {
+      "teams_per_pool": 4,
+      "matches_per_team": 3,
+      "score_limit": 21,
+      "time_limit": null
+    }
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("tournament_id", res.body.id);
+    bru.setEnvVar("share_link", res.body.share_link);
+    console.log("Tournament created:", res.body.id);
+    console.log("Share link:", res.body.share_link);
+  }
+}

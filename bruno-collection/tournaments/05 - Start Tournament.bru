@@ -1,0 +1,25 @@
+meta {
+  name: Start Tournament
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{api_url}}/tournaments/{{tournament_id}}/start
+  body: none
+  auth: none
+}
+
+tests {
+  test("Tournament started", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.message).to.equal("Tournament started");
+    expect(res.body.matches_created).to.be.greaterThan(0);
+  });
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("Matches created:", res.body.matches_created);
+  }
+}

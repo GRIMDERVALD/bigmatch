@@ -1,0 +1,22 @@
+meta {
+  name: List Tournament Players
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{api_url}}/players/tournaments/{{tournament_id}}/players
+  body: none
+  auth: none
+}
+
+tests {
+  test("Players list returned", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an("array");
+  });
+  
+  test("Has minimum players for tournament", function() {
+    expect(res.body.length).to.be.at.least(4);
+  });
+}

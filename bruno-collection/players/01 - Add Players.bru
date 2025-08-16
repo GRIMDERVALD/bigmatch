@@ -1,0 +1,41 @@
+meta {
+  name: Add Multiple Players
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api_url}}/players/tournaments/{{tournament_id}}/players
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Jordan Smith",
+    "contact": "jordan@test.com"
+  }
+}
+
+script:post-response {
+  if (res.status === 201) {
+    bru.setEnvVar("player_id", res.body.id);
+    console.log("Player added:", res.body.name);
+  }
+}
+
+docs {
+  # Add Multiple Players
+  
+  This request adds a player to the tournament.
+  Run this multiple times with different names to add 8 players:
+  
+  - Jordan Smith
+  - Alex Johnson  
+  - Taylor Brown
+  - Morgan Davis
+  - Casey Wilson
+  - Riley Garcia
+  - Avery Martinez
+  - Quinn Anderson
+}

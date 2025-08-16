@@ -1,0 +1,18 @@
+meta {
+  name: Get Tournament by Share Link
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{api_url}}/tournaments/share/{{share_link}}
+  body: none
+  auth: none
+}
+
+tests {
+  test("Tournament accessible by share link", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.share_link).to.equal(bru.getEnvVar("share_link"));
+  });
+}

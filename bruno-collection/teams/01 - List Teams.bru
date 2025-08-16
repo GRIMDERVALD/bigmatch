@@ -1,0 +1,26 @@
+meta {
+  name: List Tournament Teams
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{api_url}}/teams/tournaments/{{tournament_id}}/teams
+  body: none
+  auth: none
+}
+
+tests {
+  test("Teams list returned", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body).to.be.an("array");
+    expect(res.body.length).to.be.at.least(4);
+  });
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.length > 0) {
+    bru.setEnvVar("team_id", res.body[0].id);
+    console.log("First team ID:", res.body[0].id);
+  }
+}

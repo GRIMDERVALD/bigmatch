@@ -1,0 +1,25 @@
+meta {
+  name: Finish Match
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/matches/{{match_id}}/finish?score_a=21&score_b=18
+  body: none
+  auth: none
+}
+
+tests {
+  test("Match finished", function() {
+    expect(res.status).to.equal(200);
+    expect(res.body.message).to.equal("Match finished");
+    expect(res.body).to.have.property("winner_id");
+  });
+}
+
+script:post-response {
+  if (res.status === 200) {
+    console.log("Winner ID:", res.body.winner_id);
+  }
+}
