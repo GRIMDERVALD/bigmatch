@@ -1,6 +1,6 @@
 # 🏀 BIGMATCH - Application complète
 
-Application complète pour organiser des tournois de basket 2v2 avec :
+Application complète pour organiser des matchs de basket :
 - **Backend FastAPI** (Python) pour l'API REST
 - **Frontend React** (TypeScript) pour l'interface utilisateur
 
